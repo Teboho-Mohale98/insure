@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - InsureCompare SA</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            line-height: 1.6;
+        }
+        h1 { color: #2563eb; }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            font-size: 1rem;
+        }
+        button:hover { background: #1d4ed8; }
+        pre {
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+        }
+        .success { color: #10b981; font-weight: 600; }
+        .error { color: #ef4444; font-weight: 600; }
+        .loading { color: #f59e0b; }
+        .section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 API Test Page</h1>
+    <p>Use this page to test the InsureCompare SA API endpoints.</p>
+
+    <div class="section">
+        <h2>1. Health Check</h2>
+        <button onclick="testHealth()">Test /api/health</button>
+        <pre id="healthResult">Click button to test...</pre>
+    </div>
+
+    <div class="section">
+        <h2>2. Get Car Insurers</h2>
+        <button onclick="testCarInsurers()">Test /api/insurers/car</button>
+        <pre id="carInsurersResult">Click button to test...</pre>
+    </div>
+
+    <div class="section">
+        <h2>3. Get Car Insurance Quotes</h2>
+        <button onclick="testCarQuotes()">Test /api/quotes/car</button>
+        <pre id="carQuotesResult">Click button to test...</pre>
+    </div>
+
+    <div class="section">
+        <h2>4. Get Life Insurance Quotes</h2>
+        <button onclick="testLifeQuotes()">Test /api/quotes/life</button>
+        <pre id="lifeQuotesResult">Click button to test...</pre>
+    </div>
+
+    <div class="section">
+        <h2>5. Get Medical Aid Quotes</h2>
+        <button onclick="testMedicalQuotes()">Test /api/quotes/medical</button>
+        <pre id="medicalQuotesResult">Click button to test...</pre>
+    </div>
+
+    <div class="section">
+        <h2>6. Request Callback</h2>
+        <button onclick="testCallback()">Test /api/callback/request</button>
+        <pre id="callbackResult">Click button to test...</pre>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        async function testEndpoint(endpoint, options, resultId) {
+            const resultEl = document.getElementById(resultId);
+            resultEl.innerHTML = '<span class="loading">Testing...</span>';
+
+            try {
+                const response = await fetch(API_BASE + endpoint, options);
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultEl.innerHTML = '<span class="success">✓ Success!</span>\n\n' +
+                        JSON.stringify(data, null, 2);
+                } else {
+                    resultEl.innerHTML = '<span class="error">✗ Error!</span>\n\n' +
+                        JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                resultEl.innerHTML = '<span class="error">✗ Error!</span>\n\n' + error.message;
+            }
+        }
+
+        function testHealth() {
+            testEndpoint('/health', { method: 'GET' }, 'healthResult');
+        }
+
+        function testCarInsurers() {
+            testEndpoint('/insurers/car', { method: 'GET' }, 'carInsurersResult');
+        }
+
+        function testCarQuotes() {
+            const data = {
+                vehicleMake: 'toyota',
+                vehicleModel: 'corolla',
+                vehicleYear: 2022,
+                vehicleValue: 350000,
+                coverType: 'comprehensive',
+                province: 'gauteng'
+            };
+
+            testEndpoint('/quotes/car', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }, 'carQuotesResult');
+        }
+
+        function testLifeQuotes() {
+            const data = {
+                age: 35,
+                smoker: false,
+                coverAmount: 1000000,
+                lifeCoverType: 'term'
+            };
+
+            testEndpoint('/quotes/life', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }, 'lifeQuotesResult');
+        }
+
+        function testMedicalQuotes() {
+            const data = {
+                members: 3,
+                planType: 'comprehensive',
+                chronicConditions: 'none',
+                income: 'medium'
+            };
+
+            testEndpoint('/quotes/medical', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }, 'medicalQuotesResult');
+        }
+
+        function testCallback() {
+            const data = {
+                provider: 'Discovery Insure',
+                name: 'Test User',
+                phone: '0821234567',
+                email: 'test@example.com',
+                preferredTime: 'morning',
+                insuranceType: 'car'
+            };
+
+            testEndpoint('/callback/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }, 'callbackResult');
+        }
+    </script>
+</body>
+</html>
