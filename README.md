@@ -1,5 +1,7 @@
 # InsureCompare SA
 
+![InsureCompare SA — free insurance comparison tool](screenshots/preview.png)
+
 A free insurance comparison tool for South Africans to compare estimated quotes from multiple insurers.
 
 ## ⚠️ Important Disclaimer
